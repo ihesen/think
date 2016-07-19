@@ -1,0 +1,271 @@
+
+网络请求框架
+图片加载框架
+RxBus使用
+自定义下拉刷新RefreshLayout
+
+
+一、网络请求oknet框架使用
+1、gradle配置
+compile 'com.ricky:oknet:1.2.2 或者 直接关联module源码oknet
+oknet也是基于okhttp，使用方法基于注解的方式跟Retrofit很类似，但是个人感觉比Retrofit方便
+
+2、应用application中onCreate()进行初始化
+private void initNet(){
+        OkHttpUtils.init(this);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.put("commonHeaderKey1", "commonHeaderValue1");    //所有的 header 都 不支持 中文
+        headers.put("commonHeaderKey2", "commonHeaderValue2");
+        HttpParams params = new HttpParams();
+        params.put("commonParamsKey1", "commonParamsValue1");     //所有的 params 都 支持 中文
+        params.put("commonParamsKey2", "这里支持中文参数");
+
+        OkHttpUtils.getInstance()
+                .baseUrl("http://beta-artcloud.ntw.srnpr.com")                           //配置服务地址
+                .debug(true, true, "OKNet")                                              //是否打开调试
+                .setInnerDebug(false)                                                    //内部逻辑调试
+                .setConnectTimeout(OkHttpUtils.DEFAULT_MILLISECONDS)                     //全局的连接超时时间
+                .setReadTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)                        //全局的读取超时时间
+                .setWriteTimeOut(OkHttpUtils.DEFAULT_MILLISECONDS)                       //全局的写入超时时间
+                .addCommonHeaders(headers)                                               //设置全局公共头（根据情况可设置可不设置）
+                .setCookieStore(new MemoryCookieStore())                                 //cookie使用内存缓存（app退出后，cookie消失）
+                .setCookieStore(new PersistentCookieStore())                             //cookie持久化存储，如果cookie不过期，则一直有效
+                .addCommonParams(params);                                                //公共请求参数（可设置可不设置，设置后貌似是追加在链接地址后面，可以通过请求日志查看）
+}
+
+3、定义HttpApi
+① Get请求方式
+//?productLine=5&os=android
+@GET("http://192.168.1.70/api/common/cityList")
+NetRequest<CityResponse.DataBean> cityList(@PARAMS("productLine") int productLine, @PARAMS("os") String os);
+
+Get方式配置缓存模式（多种缓存模式可参见CacheMode类）
+@CACHE(CacheMode.FIRST_CACHE_THEN_REQUEST)
+@GET("method")
+NetRequest<RequestInfo> method();
+
+文件下载 example:
+public void downLoad(){
+        String url = "http://mobile.d.appchina.com/McDonald/r/3839542/com.qq.reader?channel=aplus.direct&uid=c0132c67-3efb-4b5c-96ec-c06a7ccc93ec&page=appplus.detail";
+        CacheManager.INSTANCE.clear();
+        OkHttpUtils.get(url).execute(new FileCallback("haha.apk") {
+
+            @Override
+            public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+                LogUtil.hLog().d("currentSize: " + currentSize + "  totalSize : " + totalSize + " progress:" + progress + "  networkSpeed:" + networkSpeed);
+            }
+
+            @Override
+            public void onResponse(boolean isFromCache, File file, Request request, @Nullable Response response) {
+                LogUtil.hLog().d("isFromCache:" + isFromCache + "  file:" + file);
+            }
+
+            @Override
+            public void onSimpleError(Cons.Error error, String message) {
+                LogUtil.hLog().d("message:" + message);
+            }
+
+            //成功失败都会执行该方法
+            @Override
+            public void onAfter(boolean isFromCache, @Nullable File file, Call call, @Nullable Response response, @Nullable Exception e) {
+                super.onAfter(isFromCache, file, call, response, e);
+                LogUtil.hLog().d("onAfter isFromCache:" + isFromCache + "  file:" + file);
+            }
+        });
+}
+
+
+
+② Post请求方式
+Post也有两种方式，一种是直接表单提交，配置File参数可以直接上传文件
+
+@POST("/webupload/zooupload")
+NetRequest<RequestInfo> upload(@PARAMS("file") File file);
+文件上传 example:
+private void upload(){
+        ApiUtils.INSTANCE.getApi().upload(new File(Environment.getExternalStorageDirectory() + File.separator + "AmberLoading.jpg")).execute(new JsonCallback<RequestInfo>() {
+
+            @Override
+            public void upProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
+                super.upProgress(currentSize, totalSize, progress, networkSpeed);
+                LogUtil.hLog().d("currentSize: " + currentSize + "  totalSize : " + totalSize + " progress:" + progress + "  networkSpeed:" + networkSpeed);
+            }
+
+            @Override
+            public void onResponse(boolean isFromCache, RequestInfo requestInfo, Request request, @Nullable Response response) {
+                LogUtil.hLog().d("requestInfo:" + requestInfo);
+            }
+
+            @Override
+            public void onSimpleError(Cons.Error error, String message) {
+                LogUtil.hLog().d("error:" + error + "  message:" + message);
+            }
+
+        });
+}
+
+
+使用最多的基本是将请求参数转成json进行数据提交
+@POSTJSON("/api/artContentController/getPostDetial")
+NetRequest<CommonBen> getPostDetial(PostDetailRequestBean entity);
+example:
+private void getPostDetail(){
+        PostDetailRequestBean bean = new PostDetailRequestBean();
+        bean.postID = "AAP160712110001";
+        NetRequest<PostDetail> postDetial = ApiUtils.INSTANCE.getApi().getPostDetial(bean);
+        postDetial.bind(this).execute(new JsonCallback<CommonBen>() {
+            @Override
+            public void onResponse(boolean isFromCache, PostDetail postDetail, Request request, @Nullable Response response) {
+                LogUtil.hLog().d("isFromCache:" + isFromCache);
+            }
+
+            @Override
+            public void onSimpleError(Cons.Error error, String message) {
+
+            }
+        });
+}
+
+4、公共请求参数配置
+需求：在一些请求中，可能需要统一设置一些公共参数信息，比如用户token信息，设备信息等。
+public HttpApi getApi() {
+    return ApiHelper.get(HttpApi.class, new NetUtil.ICustomerJsonBean<BaseRequest>() {
+         @Override
+         public BaseRequest onInterceptRequest(BaseRequest baseRequest) {
+             baseRequest.zoo.key = "123456";
+             baseRequest.zoo.token = "sfadfafd";
+             return baseRequest;
+         }
+    });
+}
+
+5、取消请求
+在调用请求的类中，实现INetViewLifecycle接口，调用请求接口时候只需要添加NetRequest.bind(this)，链式调用很方便
+在需要取消请求的地方，如onDestory()的时候，调用：NetLifecycleMgr.Instance.onNetBehavior(this, OKNetBehavior.DESTROY);
+
+6、自定义CallBack
+请求带加载对话框：            DialogCallback
+请求后将请求数据解析成实体：    JsonCallback
+亦可以直接或间接 extends AbsCallback 实现自己的CallBack
+
+
+二、Glide图片加载封装ImageLoader使用
+1、项目直接关联ImageLoader，ImageLoader中gradle添加
+compile 'com.github.bumptech.glide:glide:3.7.0'
+compile 'jp.wasabeef:glide-transformations:2.0.1'
+
+2、清单文件配置：
+application节点下配置：
+<meta-data
+     android:name="com.ihesen.imageloader.SimpleGlideModule"
+     android:value="GlideModule"/>
+GlideModule主要用于配置一些基本信息，不做过多介绍，直接百度。
+设置图片换成目录查看：SimpleGlideModule中applyOptions()方法中代码
+
+3、使用
+ImageLoader.loadImage(imageView, url);
+更多方法可直接查看ImageLoader类
+加载图片给多配置可参见ImageLoadConfig中的配置信息
+
+
+三、RxBus使用（如果项目中已经使用RxJava建议使用RxBus减小项目体积）
+主要通过RxBus.java进行处理
+
+1、gradle要引用Rx相关
+compile 'io.reactivex:rxjava:1.1.3'
+compile 'io.reactivex:rxandroid:1.1.0'
+
+2、发送事件
+RxBus.getDefault().post(new UserEvent (1, "yoyo"));
+
+public class UserEvent extends BaseEvent{
+    long id;
+    String name;
+    public User Event(long id,String name) {
+        this.id= id;
+        this.name= name;
+    }
+    public long getId() {
+        return id;
+    }
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public EventType getEventType() {
+        return EventType.USER_EVENT;
+    }
+}
+
+3、接收事件
+// rxSubscription是一个Subscription的全局变量，这段代码可以在onCreate/onStart等生命周期内
+rxSubscription = RxBus.getDefault().toObserverable(UserEvent.class)
+        .subscribe(new Action1<UserEvent>() {
+               @Override
+               public void call(UserEvent userEvent) {
+                   long id = userEvent.getId();
+                   String name = userEvent.getName();
+                   ...
+               }
+           });
+
+注意：记得销毁防止内存泄漏
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    if(!rxSubscription.isUnsubscribed()) {
+        rxSubscription.unsubscribe();
+    }
+}
+如果一个页面中需要处理过个事件类型:
+.subscribe(new Action1<BaseEvent>() {
+     @Override
+     public void call(BaseEvent baseEvent) {
+        if(baseEvent.getEventType == EventType.USER_EVENT){
+
+        }else if(..){
+
+        }
+     }
+});
+
+四、自定义下拉刷新控件使用
+1、关联RefreshLayout刷新module
+
+自定义帧动画可参见：AmberRefreshDrawable
+一些绘制动画可参见：com.ihesen.refresh中的Drawable
+
+2、所有自定义的刷新类需要继承RefreshDrawable类
+
+3、使用方法同SwipeRefreshLayout一致:
+可以使用ListView ScrollView RecyclerView
+xml布局：
+<com.ihesen.refresh.PullRefreshLayout
+     android:id="@+id/swipeRefreshLayout"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent">
+
+     <android.support.v7.widget.RecyclerView
+         android:id="@+id/recyclerView"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"/>
+</com.ihesen.refresh.PullRefreshLayout>
+
+pullRefreshLayout.setOnRefreshListener(new PullRefreshLayout.OnRefreshListener() {
+    @Override
+    public void onRefresh() {
+
+    }
+});
+刷新完成：pullRefreshLayout.setRefreshing(false);
+
+
+
+
+
+
+
+
+
