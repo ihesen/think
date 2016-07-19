@@ -36,4 +36,6 @@ dependencies {
     /*compile 'com.ricky:oknet:1.2.2'*/
     compile project(':oknet')
     compile project(':refreshlayout')
+    compile project(':centerbus')
+    compile project(':QuickAdapter')
 }

@@ -7,12 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.ihesen.think.utils.LogUtil;
-import com.ihesen.think.utils.net.ApiUtils;
-import com.ihesen.think.utils.net.callback.JsonCallback;
 import com.ihesen.think.R;
 import com.ihesen.think.module.mvp.vus.Vu;
+import com.ihesen.think.utils.LogUtil;
+import com.ihesen.think.utils.net.ApiUtils;
 import com.ihesen.think.utils.net.callback.DialogCallback;
+import com.ihesen.think.utils.net.callback.JsonCallback;
 import com.ihesen.think.utils.net.model.PostDetailRequestBean;
 import com.ihesen.think.utils.net.response.CommonBen;
 import com.ihesen.think.utils.net.response.RequestInfo;
@@ -54,7 +54,7 @@ public class RegisterVu implements Vu, INetViewLifecycle{
     public void onClick() {
 //        upload();
 //        downLoad();
-        getPostDetail();
+//        getPostDetail();
     }
 
     private void getPostDetail(){
@@ -99,7 +99,7 @@ public class RegisterVu implements Vu, INetViewLifecycle{
     public void downLoad(){
         String url = "http://mobile.d.appchina.com/McDonald/r/3839542/com.qq.reader?channel=aplus.direct&uid=c0132c67-3efb-4b5c-96ec-c06a7ccc93ec&page=appplus.detail";
         CacheManager.INSTANCE.clear();
-        OkHttpUtils.get(url).execute(new FileCallback("haha.apk") {
+        OkHttpUtils.get(url).execute(new FileCallback("test.jpg") {
 
             @Override
             public void downloadProgress(long currentSize, long totalSize, float progress, long networkSpeed) {
