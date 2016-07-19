@@ -14,18 +14,17 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
+ * 带topbar，需要topbar的vu可以继承它
  * author: ihesen on 2016/4/18 18:21
  * email: hesen@ichsy.com
  */
-public class BaseActivityVu implements Vu {
+public abstract class TopBarVu implements Vu {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.framelayout_contaner)
-    FrameLayout framelayoutContaner;
     @Bind(R.id.title)
     TextView title;
-    private View rootView;
+    protected View rootView;
 
     @Override
     public View getView() {
@@ -35,7 +34,9 @@ public class BaseActivityVu implements Vu {
     @Override
     public void init(LayoutInflater inflater, ViewGroup viewGroup) {
         rootView = inflater.inflate(R.layout.root_view, viewGroup, false);
+        ((ViewGroup) rootView.findViewById(R.id.framelayout_contaner)).addView(inflater.inflate(getContentLayoutRes(), viewGroup, false));
         ButterKnife.bind(this, rootView);
+        logic();
     }
 
     public void setToolbarText(String text) {
@@ -43,7 +44,12 @@ public class BaseActivityVu implements Vu {
         title.setText(text);
     }
 
-    public ViewGroup getContainerView() {
-        return framelayoutContaner;
+    public abstract int getContentLayoutRes();
+
+    /**
+     * 后续逻辑处理
+     */
+    protected void logic() {
+
     }
 }

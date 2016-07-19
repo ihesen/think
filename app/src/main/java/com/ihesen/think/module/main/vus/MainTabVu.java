@@ -4,24 +4,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.ihesen.think.R;
+import com.ihesen.think.module.base.TopBarVu;
 import com.ihesen.think.module.main.FragmentFactory;
 import com.ihesen.think.module.main.activities.MainTabActivity;
-import com.ihesen.think.module.mvp.vus.Vu;
 import com.viewpagerindicator.TabPageIndicator;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * author: ihesen on 2016/4/19 15:43
  * email: hesen@ichsy.com
  */
-public class MainTabVu implements Vu {
+public class MainTabVu extends TopBarVu {
 
     private String[] TAB_MENUS = new String[]{"首页", "动态", "我的"};
 
@@ -29,17 +25,14 @@ public class MainTabVu implements Vu {
     ViewPager pager;
     @Bind(R.id.indicator)
     TabPageIndicator indicator;
-    private View rootView;
 
     @Override
-    public View getView() {
-        return rootView;
+    public int getContentLayoutRes() {
+        return R.layout.main_tab_vu;
     }
 
     @Override
-    public void init(LayoutInflater inflater, ViewGroup viewGroup) {
-        rootView = inflater.inflate(R.layout.main_tab_vu, viewGroup, false);
-        ButterKnife.bind(this, rootView);
+    protected void logic() {
         initIndicator();
     }
 

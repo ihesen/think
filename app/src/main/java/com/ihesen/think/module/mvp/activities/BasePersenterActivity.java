@@ -16,6 +16,8 @@ public abstract class BasePersenterActivity<V extends Vu> extends AppCompatActiv
     public V v;
     public FragmentManager fragmentManager;
 
+    private static BasePersenterActivity mForegroundActivity;
+
     @Override
     protected final void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +37,25 @@ public abstract class BasePersenterActivity<V extends Vu> extends AppCompatActiv
     protected void onBindVu() {
     }
 
-    public void startActivity(Class activity){
+    @Override
+    protected void onResume() {
+        mForegroundActivity = this;
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mForegroundActivity == this) {
+            mForegroundActivity = null;
+        }
+        super.onPause();
+    }
+
+    public static BasePersenterActivity getForegroundActivity() {
+        return mForegroundActivity;
+    }
+
+    public void startActivity(Class activity) {
         startActivity(new Intent(this, activity));
     }
 

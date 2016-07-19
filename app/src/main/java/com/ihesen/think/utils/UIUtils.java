@@ -12,8 +12,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ihesen.think.AppApplication;
-import com.ihesen.think.module.base.BaseActivity;
 import com.ihesen.think.R;
+import com.ihesen.think.module.mvp.activities.BasePersenterActivity;
 
 /**
  * author: ihesen on 2016/4/22 14:22
@@ -148,7 +148,7 @@ public class UIUtils {
     }
 
     public static void startActivity(Intent intent) {
-        BaseActivity activity = BaseActivity.getForegroundActivity();
+        BasePersenterActivity activity = BasePersenterActivity.getForegroundActivity();
         if (activity != null) {
             activity.startActivity(intent);
         } else {
@@ -160,7 +160,7 @@ public class UIUtils {
     }
 
     public static void startActivityForResult(Intent intent, int requestCode) {
-        BaseActivity activity = BaseActivity.getForegroundActivity();
+        BasePersenterActivity activity = BasePersenterActivity.getForegroundActivity();
         if (activity != null) {
             activity.startActivityForResult(intent, requestCode);
         } else {
@@ -197,9 +197,9 @@ public class UIUtils {
     }
 
     private static void showToast(String str) {
-        BaseActivity frontActivity = BaseActivity.getForegroundActivity();
-//		if (frontActivity != null) {
-        Toast.makeText(UIUtils.getContext(), str, Toast.LENGTH_LONG).show();
-//		}
+        BasePersenterActivity frontActivity = BasePersenterActivity.getForegroundActivity();
+        if (frontActivity != null) {
+            Toast.makeText(UIUtils.getContext(), str, Toast.LENGTH_LONG).show();
+        }
     }
 }
