@@ -12,7 +12,7 @@ public class DbHelper {
     private static DaoMaster master;
     private static DaoSession daoSession;
 
-    public static final String DB_NAME = "mengdao-db";
+    public static final String DB_NAME = "think_db";
 
 
     public static DaoMaster getDaoMasterInstance() {

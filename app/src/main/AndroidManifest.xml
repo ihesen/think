@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Design.NoActionBar">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".module.splash.activities.SplashActivity"
             android:label="@string/app_name"
@@ -30,7 +30,8 @@
         <activity
             android:name=".module.splash.activities.HomeActivity"/>
         <activity
-            android:name=".module.main.activities.MainTabActivity"/>
+            android:name=".module.main.activities.MainTabActivity"
+            android:theme="@style/styledIndicators"/>
 
         <meta-data
             android:name="com.ihesen.imageloader.SimpleGlideModule"

@@ -4,7 +4,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.ihesen.think.R;
@@ -22,9 +21,9 @@ public abstract class TopBarVu implements Vu {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.title)
-    TextView title;
     protected View rootView;
+
+    public abstract int getContentLayoutRes();
 
     @Override
     public View getView() {
@@ -40,16 +39,17 @@ public abstract class TopBarVu implements Vu {
     }
 
     public void setToolbarText(String text) {
-        toolbar.setTitle("");
-        title.setText(text);
+//        title.setText(text);
     }
-
-    public abstract int getContentLayoutRes();
 
     /**
      * 后续逻辑处理
      */
     protected void logic() {
 
+    }
+
+    public Toolbar getToolbar() {
+        return toolbar == null ? (Toolbar) rootView.findViewById(R.id.toolbar) : toolbar;
     }
 }

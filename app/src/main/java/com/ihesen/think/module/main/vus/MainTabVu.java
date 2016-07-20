@@ -39,7 +39,7 @@ public class MainTabVu extends TopBarVu {
     private void initIndicator() {
         pager.setAdapter(new TabMenuAdapter(((MainTabActivity) rootView.getContext()).fragmentManager));
         indicator.setViewPager(pager);
-        setMainTabTitleText(TAB_MENUS[0]);
+        setToolbarText(TAB_MENUS[0]);
         indicator.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -48,7 +48,7 @@ public class MainTabVu extends TopBarVu {
 
             @Override
             public void onPageSelected(int position) {
-                setMainTabTitleText(TAB_MENUS[position]);
+                setToolbarText(TAB_MENUS[position]);
             }
 
             @Override
@@ -70,21 +70,12 @@ public class MainTabVu extends TopBarVu {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return TAB_MENUS[position % TAB_MENUS.length].toUpperCase();
+            return TAB_MENUS[position % TAB_MENUS.length];
         }
 
         @Override
         public int getCount() {
             return TAB_MENUS.length;
         }
-    }
-
-    /**
-     * 设置toolbar标题
-     *
-     * @param text
-     */
-    public void setMainTabTitleText(String text) {
-        ((MainTabActivity) rootView.getContext()).v.setToolbarText(text);
     }
 }
