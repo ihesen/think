@@ -5,6 +5,7 @@
 四、自定义下拉刷新RefreshLayout
 五、CenterBus使用介绍
 六、QuickAdapter使用介绍
+七、GreenDao使用
 
 
 一、网络请求oknet框架使用
@@ -332,6 +333,172 @@ github上示例介绍的狠详细，包括一些加载的动画，和自定义�
 
 如果项目中想使用同一加载完成的底部view，可以直接继承QuickAdapter，在QuickAdapter中对底部View进行了同一处理，如果遇到不同页面底部加载完成显示不同的View样式
 可以将底部View暴露出去，供子类自己去实现。
+
+七、GreenDao使用介绍
+GreenDao官网：http://greenrobot.org/greendao
+可以通过查看：changelog/查看版本更新日志信息
+
+1、创建java工程自动生成相关代码：
+创建java工程，添加gradle依赖：compile 'org.greenrobot:greendao-generator:3.0.0'（目前3.0.0是最新版本）
+
+详见：MyDaoGenerator.java类
+其实就是创建表的过程：表名其实就是需要存储信息的javabean的类名
+javabean中的属性字段，就是数据库表中字段
+
+执行生成代码会自动生成javabean和操作dao类和数据库操作DaoMaster，DaoSession类
+
+最好对DaoMaster，DaoSession进行一次封装，详见DbHelper.java
+
+2、插入数据库：
+    Activity entity = new Activity();
+    entity.setUserId("111111111");
+    entity.setUsername("userName");
+    entity.setMessage("message");
+    entity.setNewField("new field");
+    long insert = DbHelper.getActivityDao().insert(entity);
+    insert > 0 : 成功插入数据库
+
+3、查询所有数据：
+    List<Activity> list = DbHelper.getActivityDao().queryBuilder().list();
+
+    List<Activity> list1 = DbHelper.getActivityDao().queryRaw("where _id = ?", new String[]{"20"});
+
+    List<Activity> list2 = DbHelper.getActivityDao().queryBuilder()
+                                .where(NoteDao.Properties.Id.ge(10))
+                                .limit(10000)
+                                .offset(0)
+                                .orderAsc(NoteDao.Properties.Date)
+                                .list();
+
+    QueryBuilder<Activity> qb = DbHelper.getActivityDao().queryBuilder();
+    qb.where(qb.and(ActivityDao.Properties.Id.between(10, 15), ActivityDao.Properties.Message.eq("Message"))).list();
+
+    queryRaw就是将在原生的queryRaw的查询语句前加了"SELECT * FROM Note "，因此只需要再传入具体的查询条件即可。
+    queryBuilder方法采用build链式结构可以灵活地添加各种查询相关的约束，where包含具体的查询条件，limit表示查询数据的条目数量，offset表示查询数据的起始位置，orderAsc表示根据某一列进行排序，最后list得到查询结果。
+    greenDAO还提供了多重条件查询。db.and表示查询条件取"与"，db.or表示查询条件取"或"。
+
+关联查询 ：
+    关联查询属于greenDAO比较高级的用法，目前greenDAO支持一对一、一对多，不支持多对多。
+一对一：
+在greenDAO generator中建模时，必须使一个属性作为外键，使用这个属性，你可以用Entity.addToOne方法增加to-one关系。 addToOne方法的参数是另一个实体，和本实体的外键属性。
+例如：user有一个photo属性，user和photo都是普通实体
+    Entity customer = schema.addEntity("Customer");
+    customer.addIdProperty();
+    customer.addStringProperty("name").notNull();
+
+    Entity photo = schema.addEntity("Photo");
+    Property photoIdProperty = customer.addLongProperty("photoId").getProperty();
+    customer.addToOne(photo, photoIdProperty, "photo");
+
+    这样就是customer有一个photo属性，并且可以直接操作Photo对象，customer类具有Photo属性的getPhoto/setPhoto方法。to-one关系中的getter方法在第一次加载目标实体的时候是懒汉式加载，之后的访问将返回先前已解析的对象。
+注意外键属性（“photoId”）和实体对象的属性（“Photo”）绑在一起。如果你改变了photoId，下一次调用getPhoto()的时候就会用更新之后的id重新解析Photo实体。同样，如果设置了一个新的Photo实体，photoId属性也会被更新。
+
+一对多：
+    在greenDAO中建立to-many模型的方法和数据库中的操作类似，首先需要在目标实体中增加一个属性，用于关联To-many关系中的资源实体，然后使用这个属性，添加到资源实体的To-many关系。
+例如：客户/订单的例子，客户可以有多个订单，所以我们用To-Many关系模型，在数据库中，在订单表中创建customerID列，来创建1:N关系。这样的话，就可以使用客户的id查询客户的所有的订单。
+    Entity customer = schema.addEntity("Customer");
+    customer.addIdProperty();
+    customer.addStringProperty("name").notNull();
+
+    Entity order = schema.addEntity("Order");
+    order.setTableName("ORDERS"); // "ORDER" is a reserved keyword
+    order.addIdProperty();
+    Property orderDate = order.addDateProperty("date").getProperty();
+    Property customerId = order.addLongProperty("customerId").notNull().getProperty();
+    order.addToOne(customer, customerId);
+
+    ToMany customerToOrders = customer.addToMany(order, customerId);
+    customerToOrders.setName("orders");
+    customerToOrders.orderAsc(orderDate);
+
+这样，我们可以在客户类中简单的调用生成的getOrders()方法获取订单，同样，也可以在订单类中调用生成的getCustomer方法获取客户信息。
+
+
+4、删除数据
+noteDao.delete(note);
+noteDao.deleteByKey(note.getId());
+noteDao.deleteByKeyInTx(deleteList);
+noteDao.deleteAll();
+delete方法需要传入Entity对象，deleteByKey方法需要传入主键，此处主键就是Note中的id属性，也即Java Generate工程中的note.addIdProperty().primaryKey().autoincrement();
+
+5、更新数据
+更新单条数据：
+    note.setText("update_title");
+    note.setComment("update_comment");
+    noteDao.update(note);
+批量更新数据：
+    noteDao.updateInTx(noteList);
+
+注：
+①、添加带有List的Object
+例如存储实体：
+public class Star {
+    public String id;
+    public String userId;
+    public String userName;
+    public String userPic;
+    public String userIntro;
+    public String userCity;
+    public String userAddress;
+    public List<Klass> klassList;
+}
+
+public class Klass {
+    public String id;
+}
+
+Generator生成代码：
+private static void createStarsTable(Schema schema) {
+		Entity star = schema.addEntity("Star");
+		star.addStringProperty("id").primaryKey();
+		star.addStringProperty("userId");
+		star.addStringProperty("userName");
+		star.addStringProperty("userPic");
+		star.addStringProperty("userIntro");
+		star.addStringProperty("userCity");
+		star.addStringProperty("userAddress");
+
+		Entity klass = schema.addEntity("Klass");
+		klass.addStringProperty("id");
+		Property klassInStar = klass.addStringProperty("star_id").notNull().getProperty();
+		klass.addToOne(star, klassInStar);
+		star.addToMany(klass, klassInStar);
+}
+
+存取的时候，按照下面的步骤来就可以了：
+    StarDao starDao = daoSession.getStarDao();
+    KlassDao klassDao = daoSession.getKlassDao();
+    Star star = new Star();
+    Klass klass1 = new Klass();
+    Klass klass2 = new Klass();
+    Klass klass3 = new Klass();
+    klass1.setStar(star);
+    klass2.setStar(star);
+    klass2.setStar(star);
+    klassDao.insert(klass1);
+    klassDao.insert(klass2);
+    klassDao.insert(klass3);
+    starDao.insert(star);
+    List<Star> stars = starDao.loadAll();
+    for (Star starEntity : stars) {
+        for (Klass klass : starEntity.getKlassList()) {
+            Log.i("id", klass.id);
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,1 +1,1 @@
-include ':app', ':ImageLoader', ':oknet', ':centerbus', ':refreshlayout', 'QuickAdapter'
+include ':app', ':ImageLoader', ':oknet', ':centerbus', ':refreshlayout', ':DaoGenerator', 'QuickAdapter'

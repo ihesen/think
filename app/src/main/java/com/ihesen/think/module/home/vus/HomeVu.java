@@ -10,8 +10,8 @@ import android.widget.TextView;
 import com.ihesen.think.utils.LogUtil;
 import com.ihesen.think.utils.db.DbHelper;
 import com.ihesen.think.R;
-import com.ihesen.think.utils.db.tables.Activity;
 import com.ihesen.think.module.mvp.vus.Vu;
+import com.ihesen.think.utils.db.tables.Activity;
 
 import java.util.List;
 
@@ -53,7 +53,8 @@ public class HomeVu implements Vu {
         entity.setUserId("111111111");
         entity.setUsername(split[0]);
         entity.setMessage(split[1]);
-        entity.setNewField("new field");
+        entity.setId(11l);
+//        entity.setPulishDate("hshshshs");
         long insert = DbHelper.getActivityDao().insert(entity);
         if(insert > 0){
             edittext.setText("");
@@ -77,6 +78,7 @@ public class HomeVu implements Vu {
         for (Activity activity : list) {
             LogUtil.hLog().d("HomeVu " + activity.getUsername());
             LogUtil.hLog().d("HomeVu " + activity.getMessage());
+//            LogUtil.hLog().d("HomeVu " + activity.getPulishDate());
         }
     }
 }

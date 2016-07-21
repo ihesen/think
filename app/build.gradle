@@ -31,11 +31,11 @@ dependencies {
     compile 'com.viewpagerindicator:library:2.4.1'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
-    compile 'org.greenrobot:greendao:2.2.0'
     compile project(':ImageLoader')
     /*compile 'com.ricky:oknet:1.2.2'*/
     compile project(':oknet')
     compile project(':refreshlayout')
     compile project(':centerbus')
     compile project(':QuickAdapter')
+    compile 'org.greenrobot:greendao:3.0.0'
 }
