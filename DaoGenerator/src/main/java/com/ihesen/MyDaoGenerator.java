@@ -22,7 +22,7 @@ public class MyDaoGenerator {
         // 一旦你拥有了一个 Schema 对象后，你便可以使用它添加实体（Entities）了。
 //        addNote(schema);
         addActivity(schema);
-        addTestTable(schema);
+//        addTestTable(schema);
         // 最后我们将使用 DAOGenerator 类的 generateAll() 方法自动生成代码，此处你需要根据自己的情况更改输出目录（既之前创建的 java-gen)。
         // 其实，输出目录的路径可以在 build.gradle 中设置，有兴趣的朋友可以自行搜索，这里就不再详解。
 //        new DaoGenerator().generateAll(schema, "C:\\Users\\ihesen\\Desktop\\GreenDaoForAndroidStudio\\DaoExample\\src\\main\\java-gen");
@@ -52,11 +52,11 @@ public class MyDaoGenerator {
 
     private static void addActivity(Schema schema){
         Entity box = schema.addEntity("Activity");
-        box.addIdProperty();
+        box.addIdProperty().primaryKey().autoincrement();
         box.addStringProperty("userId").notNull();
         box.addStringProperty("username");
         box.addStringProperty("message");
-        box.addStringProperty("pulish");
+        box.addStringProperty("haha");
     }
 
     private static void addTestTable(Schema schema){

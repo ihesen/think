@@ -53,7 +53,6 @@ public class HomeVu implements Vu {
         entity.setUserId("111111111");
         entity.setUsername(split[0]);
         entity.setMessage(split[1]);
-        entity.setId(11l);
 //        entity.setPulishDate("hshshshs");
         long insert = DbHelper.getActivityDao().insert(entity);
         if(insert > 0){

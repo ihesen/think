@@ -486,6 +486,23 @@ private static void createStarsTable(Schema schema) {
         }
     }
 
+6、数据库的升级
+在使用数据的库的过程中，后期app可能会升级迭代，会添加新表，和修改旧表结构
+因为greendao在升级数据库的时候默认会删除所有的表，然后重新新建新的表，实现保存原数据不丢失的原理就是，在删除表之前，先创建临时表，并且将旧表中数据copy到临时表中，
+然后在删除所有表，接着重新创建新表，最后再将临时表中数据重新插入到新表中。
+核心实现类：MigrationHelper.java
+
+具体步骤：
+1、修改DaoMaster中版本号，需要比旧版本号大
+
+2、通过MyDaoGenerator重新生成需要修改的表字段，或者是新追加的表，并将生成的dao和bean替换旧的类
+
+3、将新创建的dao类，或者修改后的dao，添加到用MySQLiteOpenHelper中的onUpgrade方法内（详见源码）
+
+注意此时创建的DaoMaster对象是，用MySQLiteOpenHelper创建的
+
+
+
 
 
 

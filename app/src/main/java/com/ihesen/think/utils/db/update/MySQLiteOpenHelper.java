@@ -10,6 +10,7 @@ import com.ihesen.think.utils.db.daos.ActivityDao;
 import org.greenrobot.greendao.database.Database;
 
 /**
+ * 创建DaoMaster使用
  * author: ihesen on 2016/7/21 17:36
  * email: hesen@ichsy.com
  */

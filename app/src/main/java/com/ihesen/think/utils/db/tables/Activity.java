@@ -16,14 +16,14 @@ import org.greenrobot.greendao.annotation.NotNull;
 @Entity
 public class Activity {
 
-    @Id
+    @Id(autoincrement = true)
     private Long id;
 
     @NotNull
     private String userId;
     private String username;
     private String message;
-    private String pulish;
+    private String haha;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -37,12 +37,12 @@ public class Activity {
     }
 
     @Generated
-    public Activity(Long id, String userId, String username, String message, String pulish) {
+    public Activity(Long id, String userId, String username, String message, String haha) {
         this.id = id;
         this.userId = userId;
         this.username = username;
         this.message = message;
-        this.pulish = pulish;
+        this.haha = haha;
     }
 
     public Long getId() {
@@ -79,12 +79,12 @@ public class Activity {
         this.message = message;
     }
 
-    public String getPulish() {
-        return pulish;
+    public String getHaha() {
+        return haha;
     }
 
-    public void setPulish(String pulish) {
-        this.pulish = pulish;
+    public void setHaha(String haha) {
+        this.haha = haha;
     }
 
     // KEEP METHODS - put your custom methods here
