@@ -37,7 +37,7 @@ import ricky.oknet.utils.Cons;
  */
 public class RegisterVu implements Vu, INetViewLifecycle{
 
-    private View rootView;
+    private ViewGroup rootView;
 
     @Override
     public View getView() {
@@ -46,7 +46,7 @@ public class RegisterVu implements Vu, INetViewLifecycle{
 
     @Override
     public void init(LayoutInflater inflater, ViewGroup viewGroup) {
-        rootView = inflater.inflate(R.layout.register_vu, viewGroup, false);
+        rootView = (ViewGroup) inflater.inflate(R.layout.register_vu, viewGroup, false);
         ButterKnife.bind(this, rootView);
     }
 
