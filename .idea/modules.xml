@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/DaoGenerator/DaoGenerator.iml" filepath="$PROJECT_DIR$/DaoGenerator/DaoGenerator.iml" />
       <module fileurl="file://$PROJECT_DIR$/ImageLoader/ImageLoader.iml" filepath="$PROJECT_DIR$/ImageLoader/ImageLoader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/QuickAdapter/QuickAdapter.iml" filepath="$PROJECT_DIR$/QuickAdapter/QuickAdapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/centerbus/centerbus.iml" filepath="$PROJECT_DIR$/centerbus/centerbus.iml" />
       <module fileurl="file://$PROJECT_DIR$/oknet/oknet.iml" filepath="$PROJECT_DIR$/oknet/oknet.iml" />

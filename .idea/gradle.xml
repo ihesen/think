@@ -3,12 +3,15 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$PROJECT_DIR$/../gradle/gradle-3.4" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/DaoGenerator" />
             <option value="$PROJECT_DIR$/ImageLoader" />
+            <option value="$PROJECT_DIR$/QuickAdapter" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/centerbus" />
             <option value="$PROJECT_DIR$/oknet" />
