@@ -15,16 +15,7 @@
             <option value="$PROJECT_DIR$/refreshlayout" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/ImageLoader" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/centerbus" />
-            <option value="$PROJECT_DIR$/oknet" />
-            <option value="$PROJECT_DIR$/refreshlayout" />
-          </set>
-        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
